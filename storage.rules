@@ -1,0 +1,17 @@
+rules_version = '2';
+
+// Uploaded product/category images are served publicly (they are also made
+// public via makePublic() so they load in <Image src=...>). Uploads happen
+// server-side through the Admin SDK, which bypasses these rules, so clients
+// get read-only access and cannot write directly.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /uploads/{allPaths=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

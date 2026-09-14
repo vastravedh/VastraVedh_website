@@ -1,0 +1,69 @@
+# Firebase App Hosting configuration.
+# https://firebase.google.com/docs/app-hosting/configure
+#
+# App Hosting runs the full Next.js server (SSR + API routes) and provides
+# Application Default Credentials to the Admin SDK automatically, so the server
+# routes can talk to Firestore/Storage without a service-account key file.
+#
+# Set NEXT_PUBLIC_* build-time vars and secrets in the Firebase console
+# (App Hosting -> your backend -> Settings -> Environment) or via `firebase
+# apphosting:secrets:set`. Values below are placeholders/examples.
+
+runConfig:
+  # Scale to zero when idle; raise maxInstances for production traffic.
+  minInstances: 0
+  maxInstances: 2
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  # Server-side bucket used by the Admin SDK.
+  - variable: FIREBASE_STORAGE_BUCKET
+    value: vastravedh-7e730.firebasestorage.app
+    availability:
+      - RUNTIME
+
+  # Public (browser) Firebase config — safe to expose. Needed at build time so
+  # they are inlined into the client bundle.
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyCCXtpefs6c_kVnEDyk29C4YgeJIJWQdnA
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: vastravedh-7e730.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: vastravedh-7e730
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: vastravedh-7e730.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "306736641116"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: "1:306736641116:web:3583ddc5edaec047ed6299"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-8GZ76YC7BV
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # Admin store password/session — store these as SECRETS, not plain values.
+  # Create them first:  firebase apphosting:secrets:set ADMIN_PASSWORD
+  - variable: ADMIN_PASSWORD
+    secret: ADMIN_PASSWORD
+  - variable: ADMIN_SESSION_SECRET
+    secret: ADMIN_SESSION_SECRET
