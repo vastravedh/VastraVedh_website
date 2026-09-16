@@ -90,19 +90,20 @@ export default function ProductDetail({
 
   const off = discountPercent(product.mrp, product.price);
 
-  const handleAdd = () => {
+  /** Validate selection and add to cart. Returns true if the item was added. */
+  const addToCart = (): boolean => {
     if (!size) {
       setError("Please select a size");
-      return;
+      return false;
     }
     const avail = stockFor(size);
     if (avail !== null && avail <= 0) {
       setError("This size is out of stock");
-      return;
+      return false;
     }
     if (avail !== null && qty > avail) {
       setError(`Only ${avail} left in this size`);
-      return;
+      return false;
     }
     setError("");
     addItem({
@@ -116,8 +117,18 @@ export default function ProductDetail({
       color,
       quantity: qty,
     });
+    return true;
+  };
+
+  const handleAdd = () => {
+    if (!addToCart()) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    if (!addToCart()) return;
+    router.push("/checkout");
   };
 
   return (
@@ -408,6 +419,7 @@ export default function ProductDetail({
                     : "Add to Cart"}
             </button>
             <button
+              onClick={handleBuyNow}
               disabled={allOutOfStock || preview}
               className="btn-gold flex-1 disabled:cursor-not-allowed disabled:opacity-50 sm:flex-none"
             >

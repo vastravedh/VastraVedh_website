@@ -56,6 +56,7 @@ export default function CheckoutPage() {
       case "name":
         if (!v) return "Please enter your full name.";
         if (v.length < 2) return "Name looks too short.";
+        if (v.length > 30) return "Name can be at most 30 characters.";
         return "";
       case "phone": {
         const digits = v.replace(/\D/g, "");
@@ -204,7 +205,7 @@ export default function CheckoutPage() {
             <label className={label}>Full Name *</label>
             <input
               value={form.name}
-              onChange={(e) => set("name", e.target.value)}
+              onChange={(e) => set("name", e.target.value.slice(0, 30))}
               onBlur={(e) =>
                 setFieldErrors((p) => ({
                   ...p,
@@ -213,6 +214,7 @@ export default function CheckoutPage() {
               }
               className={fieldClass("name")}
               placeholder="Your name"
+              maxLength={30}
               aria-invalid={!!fieldErrors.name}
             />
             <FieldError k="name" />
