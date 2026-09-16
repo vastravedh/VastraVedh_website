@@ -224,7 +224,9 @@ export default function CheckoutPage() {
               type="tel"
               inputMode="numeric"
               value={form.phone}
-              onChange={(e) => set("phone", e.target.value)}
+              onChange={(e) =>
+                set("phone", e.target.value.replace(/\D/g, "").slice(0, 10))
+              }
               onBlur={(e) =>
                 setFieldErrors((p) => ({
                   ...p,
@@ -233,6 +235,7 @@ export default function CheckoutPage() {
               }
               className={fieldClass("phone")}
               placeholder="10-digit mobile number"
+              maxLength={10}
               aria-invalid={!!fieldErrors.phone}
             />
             <FieldError k="phone" />
@@ -273,7 +276,9 @@ export default function CheckoutPage() {
               <input
                 inputMode="numeric"
                 value={form.pincode}
-                onChange={(e) => set("pincode", e.target.value)}
+                onChange={(e) =>
+                  set("pincode", e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
                 onBlur={(e) =>
                   setFieldErrors((p) => ({
                     ...p,
@@ -282,7 +287,8 @@ export default function CheckoutPage() {
                   }))
                 }
                 className={fieldClass("pincode")}
-                placeholder="5000xx"
+                placeholder="500090"
+                maxLength={6}
                 aria-invalid={!!fieldErrors.pincode}
               />
               <FieldError k="pincode" />
