@@ -6,6 +6,7 @@ import { getCustomProducts } from "@/lib/productStore";
 import { Product } from "@/data/types";
 import AdminHeader from "./AdminHeader";
 import DeleteProductButton from "./DeleteProductButton";
+import DraftManager, { DraftItem } from "./DraftManager";
 
 export const metadata = { title: "Admin — VastraVedh" };
 export const dynamic = "force-dynamic";
@@ -16,15 +17,27 @@ export default async function AdminDashboard() {
     getCustomProducts(),
   ]);
 
+  // Split custom products into drafts (need review) and published/live.
+  const drafts: DraftItem[] = custom
+    .filter((p) => p.status === "draft")
+    .map((p) => ({
+      id: p.id,
+      slug: p.slug,
+      name: p.name,
+      price: p.price,
+      cover: uploads[p.baseId ?? p.id]?.[0] ?? p.images[0] ?? "/placeholder.jpg",
+    }));
+
+  const liveCustom = custom.filter((p) => p.status !== "draft");
   const builtIn = getBaseProducts();
-  const all: Product[] = [...custom, ...builtIn];
+  const all: Product[] = [...liveCustom, ...builtIn];
 
   const byCategory = all.reduce<Record<string, Product[]>>((acc, p) => {
     (acc[p.category] ??= []).push(p);
     return acc;
   }, {});
 
-  const isCustom = (id: string) => custom.some((c) => c.id === id);
+  const isCustom = (id: string) => liveCustom.some((c) => c.id === id);
 
   return (
     <div className="min-h-screen bg-cream">
@@ -44,6 +57,9 @@ export default async function AdminDashboard() {
             + Add Product
           </Link>
         </div>
+
+        {/* Draft products waiting to be published (multi-select) */}
+        <DraftManager drafts={drafts} />
 
         {Object.entries(byCategory).map(([cat, items]) => (
           <section key={cat} className="mt-8">

@@ -49,6 +49,7 @@ export default function CheckoutPage() {
         customer: form,
         couponCode: coupon?.code,
         items: items.map((i) => ({
+          productId: i.productId,
           name: i.name,
           size: i.size,
           color: i.color,

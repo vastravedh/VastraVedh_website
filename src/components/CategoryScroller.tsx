@@ -67,7 +67,6 @@ export default function CategoryScroller({
             <ProductImage
               src={categoryImages[c.slug] ?? c.image}
               alt={c.name}
-              watermark={false}
               sizes="(max-width: 640px) 40vw, (max-width: 768px) 30vw, 224px"
               className="object-cover transition-transform duration-500 group-hover:scale-110"
             />

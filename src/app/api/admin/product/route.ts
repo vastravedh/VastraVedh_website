@@ -41,6 +41,25 @@ export async function POST(req: Request) {
   const rating = Number(get("rating")) || 4.5;
   const reviews = Number(get("reviews")) || 0;
 
+  // Parse the per-size stock map sent by the form (JSON: { S: 5, M: 0 }).
+  let stock: Record<string, number> = {};
+  try {
+    const raw = get("stock");
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      for (const [k, v] of Object.entries(parsed)) {
+        const qty = Math.max(0, Math.floor(Number(v) || 0));
+        stock[k.trim()] = qty;
+      }
+    }
+  } catch {
+    stock = {};
+  }
+  // If sizes were provided but no stock map, default each to 0.
+  if (Object.keys(stock).length === 0) {
+    for (const s of sizes) stock[s] = 0;
+  }
+
   // Validate required fields
   if (!name || !category || !price || sizes.length === 0) {
     return NextResponse.json(
@@ -97,12 +116,14 @@ export async function POST(req: Request) {
     images,
     colors: colors.length ? colors : ["Maroon"],
     sizes,
+    stock,
     fabric,
     rating: Math.min(5, Math.max(0, rating)),
     reviews: Math.max(0, Math.round(reviews)),
     description,
     isNew: true,
     variantColor: colors[0] ?? "Maroon",
+    status: "draft",
   };
 
   await addCustomProduct(product);

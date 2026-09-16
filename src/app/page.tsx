@@ -1,17 +1,22 @@
 import Link from "next/link";
 import { categories } from "@/data/categories";
 import ProductCard from "@/components/ProductCard";
-import ProductImage from "@/components/ProductImage";
-import { heroPhoto } from "@/lib/productImages";
-import { catalogFeatured, catalogNewArrivals } from "@/lib/catalog";
+import {
+  catalogFeatured,
+  catalogNewArrivals,
+  catalogOutOfStock,
+} from "@/lib/catalog";
 import { getCategoryImages } from "@/lib/categoryImageStore";
 import CategoryScroller from "@/components/CategoryScroller";
+import HeroCarousel from "@/components/HeroCarousel";
+import OutOfStockCard from "@/components/OutOfStockCard";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const featured = await catalogFeatured();
   const newArrivals = await catalogNewArrivals();
+  const outOfStock = await catalogOutOfStock();
   const categoryImages = await getCategoryImages();
 
   return (
@@ -43,22 +48,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <Link
-            href="/category/sarees"
-            aria-label="Shop the festive saree collection"
-            className="group relative block aspect-[4/5] overflow-hidden rounded-lg md:aspect-[3/4]"
-          >
-            <ProductImage
-              src={heroPhoto()}
-              alt="VastraVedh festive collection — shop sarees"
-              priority
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-            <span className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-cream/90 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-maroon opacity-0 shadow transition-opacity group-hover:opacity-100">
-              Shop Sarees →
-            </span>
-          </Link>
+          <HeroCarousel categories={categories} categoryImages={categoryImages} />
         </div>
       </section>
 
@@ -140,6 +130,21 @@ export default async function HomePage() {
           ))}
         </div>
       </section>
+
+      {/* Out of Stock — with Notify Me email capture */}
+      {outOfStock.length > 0 && (
+        <section className="container-px pb-16">
+          <SectionHeading
+            title="Out of Stock"
+            subtitle="Sold out for now — get notified when these are back"
+          />
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+            {outOfStock.map((p) => (
+              <OutOfStockCard key={p.id} product={p} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

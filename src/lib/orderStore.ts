@@ -7,6 +7,8 @@ import { adminDb } from "./firebase/admin";
  */
 
 export interface OrderItem {
+  /** Product id — used to decrement per-size stock. Optional for legacy orders. */
+  productId?: string;
   name: string;
   size: string;
   color: string;

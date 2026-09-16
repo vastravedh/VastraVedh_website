@@ -53,20 +53,32 @@ export default function ProductImage({
         />
       )}
 
+      {/* VastraVedh monogram watermark in all four corners */}
       {watermark && (
-        <span className="pointer-events-none absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-cream/95 px-2 py-1 shadow-md ring-1 ring-gold/40 backdrop-blur-sm">
-          <Image
-            src="/logo.jpg"
-            alt="VastraVedh"
-            width={16}
-            height={16}
-            className="h-4 w-4 rounded-full object-cover"
-          />
-          <span className="font-serif text-[9px] font-bold leading-none text-maroon">
-            Vastra<span className="text-gold-dark">Vedh</span>
-          </span>
-        </span>
+        <>
+          <CornerMark className="left-2 top-2" />
+          <CornerMark className="right-2 top-2" />
+          <CornerMark className="bottom-2 left-2" />
+          <CornerMark className="bottom-2 right-2" />
+        </>
       )}
     </>
+  );
+}
+
+/** A single semi-transparent monogram watermark pinned to one corner. */
+function CornerMark({ className }: { className: string }) {
+  return (
+    <span
+      className={`pointer-events-none absolute flex items-center justify-center rounded-full bg-cream/85 p-0.5 shadow ring-1 ring-gold/30 backdrop-blur-sm ${className}`}
+    >
+      <Image
+        src="/imgLogo.png"
+        alt="VastraVedh"
+        width={24}
+        height={24}
+        className="h-6 w-6 rounded-full object-cover opacity-90"
+      />
+    </span>
   );
 }

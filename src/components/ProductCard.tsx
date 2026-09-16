@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Product } from "@/data/types";
 import { formatINR, discountPercent } from "@/lib/format";
+import { isFullyOutOfStock } from "@/lib/stock";
 import ProductImage from "./ProductImage";
 
 export default function ProductCard({ product }: { product: Product }) {
   const off = discountPercent(product.mrp, product.price);
+  const soldOut = isFullyOutOfStock(product);
 
   return (
     <Link
@@ -17,8 +19,15 @@ export default function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           tint={product.tint}
           sizes="(max-width: 768px) 50vw, 25vw"
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          className={`object-cover transition-transform duration-500 group-hover:scale-105 ${
+            soldOut ? "opacity-70" : ""
+          }`}
         />
+        {soldOut && (
+          <span className="absolute left-0 top-4 z-10 bg-maroon px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-cream shadow">
+            Sold Out
+          </span>
+        )}
         {product.isNew && (
           <span className="absolute left-2 top-2 rounded bg-gold px-2 py-0.5 text-[10px] font-bold uppercase text-ink">
             New

@@ -16,7 +16,9 @@ async function allProducts(): Promise<Product[]> {
     getAllUploads(),
   ]);
 
-  const merged = [...custom, ...builtIn];
+  // Drafts are admin-only; never surface them to shoppers. Built-in products
+  // (status undefined) and explicitly published ones remain visible.
+  const merged = [...custom, ...builtIn].filter((p) => p.status !== "draft");
 
   return merged.map((p) => {
     const baseId = p.baseId ?? p.id;
@@ -42,6 +44,11 @@ export async function catalogFeatured(): Promise<Product[]> {
 
 export async function catalogNewArrivals(): Promise<Product[]> {
   return (await allProducts()).filter((p) => p.isNew);
+}
+
+export async function catalogOutOfStock(): Promise<Product[]> {
+  const { isFullyOutOfStock } = await import("./stock");
+  return (await allProducts()).filter(isFullyOutOfStock);
 }
 
 export async function catalogProduct(

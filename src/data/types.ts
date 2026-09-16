@@ -15,6 +15,13 @@ export interface Product {
   images: string[];
   colors: string[];
   sizes: string[];
+  /**
+   * Available quantity per size, e.g. { S: 5, M: 0, L: 3 }.
+   * A size with 0 (or missing) is treated as out of stock.
+   * Optional so built-in catalogue products (which are always available)
+   * keep working without a stock map.
+   */
+  stock?: Record<string, number>;
   fabric: string;
   rating: number;
   reviews: number;
@@ -27,4 +34,10 @@ export interface Product {
   baseId?: string;
   /** CSS rgba overlay used to tint the photo to this variant's colour. */
   tint?: string;
+  /**
+   * Publish state for admin-created products. `draft` products are visible
+   * only in the admin preview, never to shoppers. Built-in catalogue products
+   * leave this undefined and are always treated as published.
+   */
+  status?: "draft" | "published";
 }

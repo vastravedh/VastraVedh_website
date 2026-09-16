@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { saveOrder, Order, OrderItem, Customer } from "@/lib/orderStore";
+import { decrementStock } from "@/lib/productStore";
 import { sendSms } from "@/lib/sms";
 import { findCoupon } from "@/data/coupons";
 
@@ -76,6 +77,15 @@ export async function POST(req: Request) {
   };
 
   await saveOrder(order);
+
+  // Reduce stock for admin-created products (built-in items are skipped).
+  await decrementStock(
+    items.map((i) => ({
+      productId: i.productId,
+      size: i.size,
+      quantity: i.quantity,
+    }))
+  );
 
   // ---- SMS notifications ----
   const itemLines = items
