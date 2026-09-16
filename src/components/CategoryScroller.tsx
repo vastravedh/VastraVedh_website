@@ -1,14 +1,15 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import ProductImage from "@/components/ProductImage";
 import type { Category } from "@/data/types";
 
 /**
  * Horizontal, scrollable showcase of every category. Each card shows a
- * single image and links to that category's page. Includes left/right
- * arrow controls on larger screens and native swipe/scroll on touch.
+ * single image and links to that category's page. Auto-scrolls continuously,
+ * pauses on hover/touch, and includes left/right arrow controls on larger
+ * screens plus native swipe/scroll on touch.
  */
 export default function CategoryScroller({
   categories,
@@ -18,6 +19,8 @@ export default function CategoryScroller({
   categoryImages: Record<string, string>;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  // When true, the auto-scroll loop is suspended (hover, touch, focus).
+  const pausedRef = useRef(false);
 
   const scrollByCards = (direction: 1 | -1) => {
     const track = trackRef.current;
@@ -27,8 +30,52 @@ export default function CategoryScroller({
     track.scrollBy({ left: amount * direction, behavior: "smooth" });
   };
 
+  // Continuous auto-scroll. Advances the track a little on each tick and loops
+  // back to the start once it reaches the end. Pauses while the user is
+  // interacting (hover / touch / focus) and respects reduced-motion settings.
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReduced) return;
+
+    const STEP = 1; // px per tick
+    const TICK = 20; // ms between ticks
+    const id = setInterval(() => {
+      if (pausedRef.current) return;
+      const maxScroll = track.scrollWidth - track.clientWidth;
+      if (maxScroll <= 0) return;
+      if (track.scrollLeft >= maxScroll - 1) {
+        // Reached the end — jump back to the start to loop seamlessly.
+        track.scrollTo({ left: 0, behavior: "auto" });
+      } else {
+        track.scrollLeft += STEP;
+      }
+    }, TICK);
+
+    return () => clearInterval(id);
+  }, [categories.length]);
+
+  const pause = () => {
+    pausedRef.current = true;
+  };
+  const resume = () => {
+    pausedRef.current = false;
+  };
+
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onMouseEnter={pause}
+      onMouseLeave={resume}
+      onTouchStart={pause}
+      onTouchEnd={resume}
+      onFocusCapture={pause}
+      onBlurCapture={resume}
+    >
       {/* Left arrow */}
       <button
         type="button"

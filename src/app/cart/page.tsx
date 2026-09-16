@@ -40,8 +40,9 @@ export default function CartPage() {
 
   const discount = applied ? Math.round((subtotal * applied.percent) / 100) : 0;
   const discountedSubtotal = subtotal - discount;
-  const shipping =
-    discountedSubtotal >= 999 || discountedSubtotal === 0 ? 0 : 79;
+  // Delivery is free within a 6 km radius; charges beyond are collected by the
+  // delivery partner, so the cart total doesn't add a flat shipping fee.
+  const shipping = 0;
   const total = discountedSubtotal + shipping;
 
   if (items.length === 0) {
@@ -207,16 +208,14 @@ export default function CartPage() {
               </div>
             )}
             <div className="flex justify-between">
-              <dt className="text-ink/60">Shipping</dt>
-              <dd className="font-medium">
-                {shipping === 0 ? "FREE" : formatINR(shipping)}
+              <dt className="text-ink/60">Delivery</dt>
+              <dd className="text-right text-xs font-medium text-ink/60">
+                Free within 6 km
               </dd>
             </div>
-            {shipping > 0 && (
-              <p className="text-xs text-ink/50">
-                Add {formatINR(999 - discountedSubtotal)} more for free shipping
-              </p>
-            )}
+            <p className="text-xs text-ink/50">
+              Charges apply beyond 6 km as per delivery partner rates.
+            </p>
             <div className="mt-2 flex justify-between border-t border-maroon/10 pt-3 text-base">
               <dt className="font-semibold">Total</dt>
               <dd className="font-bold text-maroon">{formatINR(total)}</dd>

@@ -8,8 +8,6 @@ import { useCart } from "@/context/CartContext";
 import { formatINR } from "@/lib/format";
 import { findCoupon } from "@/data/coupons";
 
-const HYD_DELIVERY_FEE = 49;
-
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, subtotal, clear } = useCart();
@@ -20,7 +18,7 @@ export default function CheckoutPage() {
       : "";
   const coupon = couponCode ? findCoupon(couponCode) : undefined;
   const discount = coupon ? Math.round((subtotal * coupon.percent) / 100) : 0;
-  const total = subtotal - discount + HYD_DELIVERY_FEE;
+  const total = subtotal - discount;
 
   const [form, setForm] = useState({
     name: "",
@@ -379,8 +377,11 @@ export default function CheckoutPage() {
               </div>
             )}
             <div className="flex justify-between">
-              <dt className="text-ink/60">Delivery (Hyderabad)</dt>
-              <dd>{formatINR(HYD_DELIVERY_FEE)}</dd>
+              <dt className="text-ink/60">Delivery</dt>
+              <dd className="text-right text-xs text-ink/60">
+                Free within 6 km ·<br />
+                extra beyond as per partner
+              </dd>
             </div>
             <div className="flex justify-between border-t border-maroon/10 pt-2 text-base">
               <dt className="font-semibold">Total (COD)</dt>

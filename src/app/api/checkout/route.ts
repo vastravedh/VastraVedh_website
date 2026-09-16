@@ -7,7 +7,6 @@ import { findCoupon } from "@/data/coupons";
 export const runtime = "nodejs";
 
 const OWNER_PHONE = process.env.OWNER_PHONE || "9063905840";
-const HYD_DELIVERY_FEE = Number(process.env.HYD_DELIVERY_FEE || 49);
 
 function money(n: number) {
   return `Rs.${n}`;
@@ -59,7 +58,9 @@ export async function POST(req: Request) {
   const subtotal = items.reduce((s, i) => s + i.price * i.quantity, 0);
   const coupon = couponCode ? findCoupon(couponCode) : undefined;
   const discount = coupon ? Math.round((subtotal * coupon.percent) / 100) : 0;
-  const deliveryFee = HYD_DELIVERY_FEE;
+  // Delivery is free within a 6 km radius; charges beyond are collected
+  // separately by the delivery partner, so no flat fee is added here.
+  const deliveryFee = 0;
   const total = subtotal - discount + deliveryFee;
 
   const order: Order = {
