@@ -1,5 +1,13 @@
 import "server-only";
 import { adminDb } from "./firebase/admin";
+import type { OrderStatus } from "./orderStatus";
+
+// Re-export status constants/types so existing server imports keep working.
+export {
+  ORDER_STAGES,
+  ORDER_STATUS_LABELS,
+  type OrderStatus,
+} from "./orderStatus";
 
 /**
  * Server-only order store, backed by the Firestore `orders` collection
@@ -29,6 +37,8 @@ export interface Customer {
 export interface Order {
   id: string;
   createdAt: string;
+  /** Set whenever the status changes; used to show a timeline history. */
+  updatedAt?: string;
   customer: Customer;
   items: OrderItem[];
   subtotal: number;
@@ -37,7 +47,7 @@ export interface Order {
   deliveryFee: number;
   total: number;
   paymentMethod: "COD";
-  status: "confirmed";
+  status: OrderStatus;
 }
 
 const col = () => adminDb.collection("orders");
@@ -59,4 +69,17 @@ export async function getOrders(): Promise<Order[]> {
 export async function getOrder(id: string): Promise<Order | undefined> {
   const snap = await col().doc(id).get();
   return snap.exists ? (snap.data() as Order) : undefined;
+}
+
+/** Update an order's delivery status. Returns the updated order, or undefined. */
+export async function updateOrderStatus(
+  id: string,
+  status: OrderStatus
+): Promise<Order | undefined> {
+  const ref = col().doc(id);
+  const snap = await ref.get();
+  if (!snap.exists) return undefined;
+  const updatedAt = new Date().toISOString();
+  await ref.update({ status, updatedAt });
+  return { ...(snap.data() as Order), status, updatedAt };
 }

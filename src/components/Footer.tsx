@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/data/categories";
+import NewsletterForm from "./NewsletterForm";
 
 export default function Footer() {
   return (
@@ -48,9 +49,9 @@ export default function Footer() {
             Help
           </h4>
           <ul className="space-y-2 text-sm text-cream/80">
-            <li><Link href="#" className="hover:text-gold">Track Order</Link></li>
-            <li><Link href="#" className="hover:text-gold">Returns &amp; Exchange</Link></li>
-            <li><Link href="#" className="hover:text-gold">Shipping Policy</Link></li>
+            <li><Link href="/track" className="hover:text-gold">Track Order</Link></li>
+            <li><Link href="/returns" className="hover:text-gold">Returns &amp; Exchange</Link></li>
+            <li><Link href="/shipping" className="hover:text-gold">Shipping Policy</Link></li>
             <li><Link href="/contact" className="hover:text-gold">Contact Us</Link></li>
           </ul>
         </div>
@@ -63,19 +64,7 @@ export default function Footer() {
           <p className="text-sm text-cream/80">
             Subscribe for new arrivals and exclusive offers.
           </p>
-          <form className="mt-3 flex overflow-hidden rounded-md">
-            <input
-              type="email"
-              placeholder="Your email"
-              className="w-full px-3 py-2 text-sm text-ink outline-none"
-            />
-            <button
-              type="submit"
-              className="bg-gold px-4 text-sm font-semibold text-ink hover:bg-gold-dark"
-            >
-              Join
-            </button>
-          </form>
+          <NewsletterForm />
         </div>
       </div>
 

@@ -12,6 +12,12 @@ export default function AdminHeader() {
           <Link href="/admin" className="text-ink hover:text-maroon">
             Products
           </Link>
+          <Link href="/admin/orders" className="text-ink hover:text-maroon">
+            Orders
+          </Link>
+          <Link href="/admin/subscribers" className="text-ink hover:text-maroon">
+            Subscribers
+          </Link>
           <Link href="/admin/categories" className="text-ink hover:text-maroon">
             Category Images
           </Link>
