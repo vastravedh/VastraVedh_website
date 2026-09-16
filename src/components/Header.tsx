@@ -33,7 +33,7 @@ export default function Header() {
       </div>
 
       {/* Main bar */}
-      <div className="container-px flex items-center gap-4 py-3">
+      <div className="container-px flex items-center gap-3 py-2.5">
         {/* Mobile menu button */}
         <button
           aria-label="Open menu"
@@ -45,15 +45,15 @@ export default function Header() {
 
         <Logo />
 
-        {/* Search (desktop/tablet) */}
-        <div className="hidden flex-1 md:block">
+        {/* Search (desktop/tablet) — centered, capped width */}
+        <div className="mx-4 hidden flex-1 justify-center md:flex">
           <Suspense fallback={null}>
             <SearchBar />
           </Suspense>
         </div>
 
         {/* Right actions */}
-        <div className="ml-auto flex items-center gap-5">
+        <div className="flex items-center gap-5">
           <Link
             href="/account"
             className="hidden text-sm font-medium text-ink hover:text-maroon sm:inline"

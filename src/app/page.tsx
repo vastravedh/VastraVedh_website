@@ -5,6 +5,7 @@ import ProductImage from "@/components/ProductImage";
 import { heroPhoto } from "@/lib/productImages";
 import { catalogFeatured, catalogNewArrivals } from "@/lib/catalog";
 import { getCategoryImages } from "@/lib/categoryImageStore";
+import CategoryScroller from "@/components/CategoryScroller";
 
 export const dynamic = "force-dynamic";
 
@@ -42,20 +43,43 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-lg md:aspect-[3/4]">
+          <Link
+            href="/category/sarees"
+            aria-label="Shop the festive saree collection"
+            className="group relative block aspect-[4/5] overflow-hidden rounded-lg md:aspect-[3/4]"
+          >
             <ProductImage
               src={heroPhoto()}
-              alt="VastraVedh festive collection"
+              alt="VastraVedh festive collection — shop sarees"
               priority
               sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
-          </div>
+            <span className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-cream/90 px-5 py-2 text-xs font-semibold uppercase tracking-wide text-maroon opacity-0 shadow transition-opacity group-hover:opacity-100">
+              Shop Sarees →
+            </span>
+          </Link>
+        </div>
+      </section>
+
+      {/* Quick category strip — visible right under the hero so users
+          immediately know what they can shop, no scrolling needed */}
+      <section className="border-b border-maroon/10 bg-cream">
+        <div className="container-px flex gap-3 overflow-x-auto py-4 no-scrollbar">
+          {categories.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/category/${c.slug}`}
+              className="flex flex-shrink-0 items-center rounded-full border border-maroon/20 bg-white px-4 py-2 text-sm font-medium text-maroon transition-colors hover:border-maroon hover:bg-maroon hover:text-cream"
+            >
+              {c.name}
+            </Link>
+          ))}
         </div>
       </section>
 
       {/* Offers strip */}
-      <section className="border-y border-maroon/10 bg-cream-dark">
+      <section className="border-b border-maroon/10 bg-cream-dark">
         <div className="container-px grid grid-cols-2 gap-4 py-6 text-center text-sm md:grid-cols-4">
           <Feature title="Free Shipping" sub="On orders above ₹999" />
           <Feature title="Easy Returns" sub="7-day return policy" />
@@ -70,27 +94,7 @@ export default async function HomePage() {
           title="Shop by Category"
           subtitle="Find your perfect look across our curated collections"
         />
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {categories.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/category/${c.slug}`}
-              className="group relative aspect-square overflow-hidden rounded-lg"
-            >
-              <ProductImage
-                src={categoryImages[c.slug] ?? c.image}
-                alt={c.name}
-                watermark={false}
-                sizes="(max-width: 768px) 50vw, 25vw"
-                className="object-cover transition-transform duration-500 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-transparent" />
-              <span className="absolute bottom-3 left-0 right-0 text-center font-serif text-lg font-semibold text-cream">
-                {c.name}
-              </span>
-            </Link>
-          ))}
-        </div>
+        <CategoryScroller categories={categories} categoryImages={categoryImages} />
       </section>
 
       {/* Bestsellers */}
