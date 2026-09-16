@@ -12,6 +12,7 @@
     "firebase": "^12.19.0",
     "firebase-admin": "^14.4.0",
     "next": "^14.2.33",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "server-only": "^0.0.1",
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",

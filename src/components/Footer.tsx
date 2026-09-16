@@ -51,7 +51,7 @@ export default function Footer() {
             <li><Link href="#" className="hover:text-gold">Track Order</Link></li>
             <li><Link href="#" className="hover:text-gold">Returns &amp; Exchange</Link></li>
             <li><Link href="#" className="hover:text-gold">Shipping Policy</Link></li>
-            <li><Link href="#" className="hover:text-gold">Contact Us</Link></li>
+            <li><Link href="/contact" className="hover:text-gold">Contact Us</Link></li>
           </ul>
         </div>
 
