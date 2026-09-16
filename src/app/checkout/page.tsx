@@ -33,14 +33,85 @@ export default function CheckoutPage() {
   });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof typeof form, string>>
+  >({});
 
-  const set = (k: keyof typeof form, v: string) =>
+  const set = (k: keyof typeof form, v: string) => {
     setForm((f) => ({ ...f, [k]: v }));
+    // Clear a field's error as soon as the user edits it.
+    setFieldErrors((prev) => {
+      if (!prev[k]) return prev;
+      const next = { ...prev };
+      delete next[k];
+      return next;
+    });
+  };
+
+  /** Validate a single field's current value. Returns an error string or "". */
+  const validateField = (
+    k: keyof typeof form,
+    value: string
+  ): string => {
+    const v = value.trim();
+    switch (k) {
+      case "name":
+        if (!v) return "Please enter your full name.";
+        if (v.length < 2) return "Name looks too short.";
+        return "";
+      case "phone": {
+        const digits = v.replace(/\D/g, "");
+        if (!digits) return "Please enter your phone number.";
+        if (!/^[6-9]\d{9}$/.test(digits))
+          return "Enter a valid 10-digit mobile number.";
+        return "";
+      }
+      case "address":
+        if (!v) return "Please enter your full address.";
+        if (v.length < 10)
+          return "Please add more detail (house/flat, street, area).";
+        return "";
+      case "city":
+        if (!v) return "Please enter your city.";
+        return "";
+      case "pincode":
+        if (!v) return "Please enter your pincode.";
+        if (!/^\d{6}$/.test(v)) return "Pincode must be 6 digits.";
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  /** Validate all required fields. Returns a map of field -> error. */
+  const validateAll = (): Partial<Record<keyof typeof form, string>> => {
+    const keys: (keyof typeof form)[] = [
+      "name",
+      "phone",
+      "address",
+      "city",
+      "pincode",
+    ];
+    const errs: Partial<Record<keyof typeof form, string>> = {};
+    for (const k of keys) {
+      const msg = validateField(k, form[k]);
+      if (msg) errs[k] = msg;
+    }
+    return errs;
+  };
 
   const placeOrder = async (e: React.FormEvent) => {
     e.preventDefault();
-    setBusy(true);
     setError("");
+
+    // Client-side validation first — show inline errors, don't submit.
+    const errs = validateAll();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      return;
+    }
+
+    setBusy(true);
 
     const res = await fetch("/api/checkout", {
       method: "POST",
@@ -85,9 +156,19 @@ export default function CheckoutPage() {
     );
   }
 
-  const field =
-    "w-full rounded-md border border-maroon/20 px-3 py-2.5 text-sm outline-none focus:border-maroon";
+  const baseField =
+    "w-full rounded-md border px-3 py-2.5 text-sm outline-none";
+  const fieldClass = (k: keyof typeof form) =>
+    `${baseField} ${
+      fieldErrors[k]
+        ? "border-red-500 focus:border-red-500"
+        : "border-maroon/20 focus:border-maroon"
+    }`;
   const label = "mb-1 block text-sm font-medium text-ink";
+  const FieldError = ({ k }: { k: keyof typeof form }) =>
+    fieldErrors[k] ? (
+      <p className="mt-1 text-xs font-medium text-red-600">{fieldErrors[k]}</p>
+    ) : null;
 
   return (
     <div className="container-px py-10">
@@ -103,9 +184,13 @@ export default function CheckoutPage() {
             1-hour delivery within Hyderabad
           </p>
           <p className="text-ink/70">
-            We deliver your order within an hour inside Hyderabad. Delivery
-            charges are extra ({formatINR(HYD_DELIVERY_FEE)}). Cash on Delivery
-            only — we&apos;ll call you to confirm right after you place the order.
+            We deliver your order within an hour inside Hyderabad. Cash on
+            Delivery only — we&apos;ll call you to confirm right after you place
+            the order.
+          </p>
+          <p className="mt-2 font-medium text-maroon">
+            Free delivery is available within a 6 km radius. Charges apply
+            beyond 6 km as per delivery partner rates.
           </p>
         </div>
       </div>
@@ -120,36 +205,59 @@ export default function CheckoutPage() {
           <div>
             <label className={label}>Full Name *</label>
             <input
-              required
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              className={field}
+              onBlur={(e) =>
+                setFieldErrors((p) => ({
+                  ...p,
+                  name: validateField("name", e.target.value) || undefined,
+                }))
+              }
+              className={fieldClass("name")}
               placeholder="Your name"
+              aria-invalid={!!fieldErrors.name}
             />
+            <FieldError k="name" />
           </div>
 
           <div>
             <label className={label}>Phone Number *</label>
             <input
-              required
               type="tel"
+              inputMode="numeric"
               value={form.phone}
               onChange={(e) => set("phone", e.target.value)}
-              className={field}
+              onBlur={(e) =>
+                setFieldErrors((p) => ({
+                  ...p,
+                  phone: validateField("phone", e.target.value) || undefined,
+                }))
+              }
+              className={fieldClass("phone")}
               placeholder="10-digit mobile number"
+              aria-invalid={!!fieldErrors.phone}
             />
+            <FieldError k="phone" />
           </div>
 
           <div>
             <label className={label}>Full Address *</label>
             <textarea
-              required
               rows={3}
               value={form.address}
               onChange={(e) => set("address", e.target.value)}
-              className={field}
+              onBlur={(e) =>
+                setFieldErrors((p) => ({
+                  ...p,
+                  address:
+                    validateField("address", e.target.value) || undefined,
+                }))
+              }
+              className={fieldClass("address")}
               placeholder="House / flat no, street, area"
+              aria-invalid={!!fieldErrors.address}
             />
+            <FieldError k="address" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -158,30 +266,46 @@ export default function CheckoutPage() {
               <input
                 value={form.landmark}
                 onChange={(e) => set("landmark", e.target.value)}
-                className={field}
+                className={fieldClass("landmark")}
                 placeholder="Near..."
               />
             </div>
             <div>
               <label className={label}>Pincode *</label>
               <input
-                required
+                inputMode="numeric"
                 value={form.pincode}
                 onChange={(e) => set("pincode", e.target.value)}
-                className={field}
+                onBlur={(e) =>
+                  setFieldErrors((p) => ({
+                    ...p,
+                    pincode:
+                      validateField("pincode", e.target.value) || undefined,
+                  }))
+                }
+                className={fieldClass("pincode")}
                 placeholder="5000xx"
+                aria-invalid={!!fieldErrors.pincode}
               />
+              <FieldError k="pincode" />
             </div>
           </div>
 
           <div>
             <label className={label}>City *</label>
             <input
-              required
               value={form.city}
               onChange={(e) => set("city", e.target.value)}
-              className={field}
+              onBlur={(e) =>
+                setFieldErrors((p) => ({
+                  ...p,
+                  city: validateField("city", e.target.value) || undefined,
+                }))
+              }
+              className={fieldClass("city")}
+              aria-invalid={!!fieldErrors.city}
             />
+            <FieldError k="city" />
             <p className="mt-1 text-xs text-ink/50">
               1-hour delivery applies within Hyderabad only.
             </p>
@@ -192,7 +316,7 @@ export default function CheckoutPage() {
             <input
               value={form.notes}
               onChange={(e) => set("notes", e.target.value)}
-              className={field}
+              className={fieldClass("notes")}
               placeholder="Any instructions for delivery"
             />
           </div>

@@ -71,7 +71,7 @@ export default async function HomePage() {
       {/* Offers strip */}
       <section className="border-b border-maroon/10 bg-cream-dark">
         <div className="container-px grid grid-cols-2 gap-4 py-6 text-center text-sm md:grid-cols-4">
-          <Feature title="Free Shipping" sub="On orders above ₹999" />
+          <Feature title="Free Delivery" sub="Within 6 km · ₹999+ orders" />
           <Feature title="Easy Returns" sub="7-day return policy" />
           <Feature title="Secure Payments" sub="100% protected" />
           <Feature title="COD Available" sub="Pay on delivery" />
