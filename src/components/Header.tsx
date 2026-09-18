@@ -5,12 +5,14 @@ import { usePathname } from "next/navigation";
 import { Suspense, useState } from "react";
 import { categories } from "@/data/categories";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import Logo from "./Logo";
 import SearchBar from "./SearchBar";
 import NavHighlighter from "./NavHighlighter";
 
 export default function Header() {
   const { totalItems } = useCart();
+  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
 
@@ -56,9 +58,10 @@ export default function Header() {
         <div className="flex items-center gap-5">
           <Link
             href="/account"
-            className="hidden text-sm font-medium text-ink hover:text-maroon sm:inline"
+            className="hidden items-center gap-1.5 text-sm font-medium text-ink hover:text-maroon sm:inline-flex"
           >
-            Account
+            <UserIcon />
+            {user ? (user.name?.split(" ")[0] || "Account") : "Sign In"}
           </Link>
           <Link
             href="/cart"
@@ -180,6 +183,15 @@ function CartIcon() {
       <circle cx="9" cy="21" r="1" />
       <circle cx="20" cy="21" r="1" />
       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
     </svg>
   );
 }

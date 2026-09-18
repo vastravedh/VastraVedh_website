@@ -8,6 +8,7 @@ import { formatINR, discountPercent } from "@/lib/format";
 import { getVariant } from "@/data/products";
 import ProductImage from "./ProductImage";
 import NotifyMe from "./NotifyMe";
+import WishlistButton from "./WishlistButton";
 
 export default function ProductDetail({
   product,
@@ -425,6 +426,13 @@ export default function ProductDetail({
             >
               Buy Now
             </button>
+            {!preview && (
+              <WishlistButton
+                productId={product.slug}
+                className="!bg-cream-dark !shadow-none"
+                size={22}
+              />
+            )}
           </div>
         )}
 

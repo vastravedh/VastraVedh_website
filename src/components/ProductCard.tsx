@@ -3,6 +3,7 @@ import { Product } from "@/data/types";
 import { formatINR, discountPercent } from "@/lib/format";
 import { isFullyOutOfStock } from "@/lib/stock";
 import ProductImage from "./ProductImage";
+import WishlistButton from "./WishlistButton";
 
 export default function ProductCard({ product }: { product: Product }) {
   const off = discountPercent(product.mrp, product.price);
@@ -43,6 +44,9 @@ export default function ProductCard({ product }: { product: Product }) {
             {off}% OFF
           </span>
         )}
+        <div className="absolute bottom-2 right-2 z-10">
+          <WishlistButton productId={product.slug} size={16} />
+        </div>
       </div>
 
       <div className="p-3">

@@ -71,6 +71,18 @@ export async function getOrder(id: string): Promise<Order | undefined> {
   return snap.exists ? (snap.data() as Order) : undefined;
 }
 
+/** All orders whose customer phone matches any of the given phone numbers. */
+export async function getOrdersByPhones(phones: string[]): Promise<Order[]> {
+  const set = new Set(
+    phones.map((p) => String(p).replace(/\D/g, "")).filter(Boolean)
+  );
+  if (set.size === 0) return [];
+  const all = await getOrders();
+  return all.filter((o) =>
+    set.has(String(o.customer.phone).replace(/\D/g, ""))
+  );
+}
+
 /** Update an order's delivery status. Returns the updated order, or undefined. */
 export async function updateOrderStatus(
   id: string,
