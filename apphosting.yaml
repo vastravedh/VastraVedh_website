@@ -67,3 +67,11 @@ env:
     secret: ADMIN_PASSWORD
   - variable: ADMIN_SESSION_SECRET
     secret: ADMIN_SESSION_SECRET
+  - variable: RESEND_API_KEY
+    secret: RESEND_API_KEY
+
+  # Email sender. Using Resend's shared sender until the domain is verified.
+  - variable: MAIL_FROM
+    value: VastraVedh <onboarding@resend.dev>
+    availability:
+      - RUNTIME
