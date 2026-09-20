@@ -60,9 +60,13 @@ export async function requestOtp(
     html,
   });
 
-  // In dev (or when email isn't configured), surface the code so it's testable.
-  const devCode =
-    res.skipped || process.env.NODE_ENV !== "production" ? code : undefined;
+  // Only surface the code on screen when we could NOT email it (no provider
+  // configured, or the send failed). Once email works, the code is never shown.
+  const emailed = res.ok && !res.skipped;
+  if (!emailed) {
+    console.warn("[userAuth] OTP not emailed; falling back to on-screen code.", res.error ?? "");
+  }
+  const devCode = emailed ? undefined : code;
   return { ok: true, devCode };
 }
 
