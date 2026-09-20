@@ -120,6 +120,7 @@ export default function CheckoutPage() {
         couponCode: coupon?.code,
         items: items.map((i) => ({
           productId: i.productId,
+          slug: i.slug,
           name: i.name,
           size: i.size,
           color: i.color,

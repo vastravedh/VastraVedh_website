@@ -9,6 +9,7 @@ import { getVariant } from "@/data/products";
 import ProductImage from "./ProductImage";
 import NotifyMe from "./NotifyMe";
 import WishlistButton from "./WishlistButton";
+import ProductReviews from "./ProductReviews";
 
 export default function ProductDetail({
   product,
@@ -453,6 +454,11 @@ export default function ProductDetail({
             <dd className="text-ink">{product.sizes.join(", ")}</dd>
           </dl>
         </div>
+
+        {/* Ratings & Reviews (verified purchase only) */}
+        {!preview && (
+          <ProductReviews productId={product.slug} productName={product.name} />
+        )}
       </div>
 
       {/* Full-screen image viewer */}

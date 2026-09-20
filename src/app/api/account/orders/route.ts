@@ -30,11 +30,13 @@ export async function GET() {
       createdAt: o.createdAt,
       status: o.status,
       statusLabel: ORDER_STATUS_LABELS[o.status] ?? o.status,
+      delivered: o.status === "delivered",
       total: o.total,
       items: o.items.map((i) => ({
         name: i.name,
         size: i.size,
         quantity: i.quantity,
+        slug: i.slug,
       })),
     })),
   });

@@ -17,6 +17,8 @@ export {
 export interface OrderItem {
   /** Product id — used to decrement per-size stock. Optional for legacy orders. */
   productId?: string;
+  /** Product slug — used to link to the product page and reviews. */
+  slug?: string;
   name: string;
   size: string;
   color: string;

@@ -9,6 +9,7 @@ import {
 } from "firebase-admin/app";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
+import { getAuth, type Auth } from "firebase-admin/auth";
 
 /**
  * Server-side Firebase Admin SDK. Used by API routes and server-only stores to
@@ -59,6 +60,7 @@ const app = buildApp();
 
 export const adminDb: Firestore = getFirestore(app);
 export const adminStorage = getStorage(app);
+export const adminAuth: Auth = getAuth(app);
 
 /** The default Storage bucket handle. */
 export function bucket() {

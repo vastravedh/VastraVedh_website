@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { formatINR } from "@/lib/format";
+import GoogleSignInButton from "@/components/GoogleSignInButton";
 
 /* =========================================================================
    Top-level: show the login card when logged out, the dashboard when in.
@@ -93,8 +94,21 @@ function LoginCard() {
           one-time code.
         </p>
 
+        {step === "email" && (
+          <>
+            <div className="mt-6">
+              <GoogleSignInButton />
+            </div>
+            <div className="my-5 flex items-center gap-3 text-xs text-ink/40">
+              <span className="h-px flex-1 bg-maroon/10" />
+              or continue with email
+              <span className="h-px flex-1 bg-maroon/10" />
+            </div>
+          </>
+        )}
+
         {step === "email" ? (
-          <form onSubmit={sendCode} className="mt-6 space-y-4">
+          <form onSubmit={sendCode} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-ink">
                 Email
@@ -232,8 +246,9 @@ type MyOrder = {
   id: string;
   createdAt: string;
   statusLabel: string;
+  delivered: boolean;
   total: number;
-  items: { name: string; size: string; quantity: number }[];
+  items: { name: string; size: string; quantity: number; slug?: string }[];
 };
 
 function OrdersTab() {
@@ -273,9 +288,19 @@ function OrdersTab() {
               year: "numeric",
             })}
           </p>
-          <ul className="mt-2 text-sm text-ink/70">
+          <ul className="mt-2 space-y-1 text-sm text-ink/70">
             {o.items.map((it, i) => (
-              <li key={i}>{it.name} · {it.size} · Qty {it.quantity}</li>
+              <li key={i} className="flex flex-wrap items-center gap-x-2">
+                <span>{it.name} · {it.size} · Qty {it.quantity}</span>
+                {o.delivered && it.slug && (
+                  <Link
+                    href={`/product/${it.slug}#reviews`}
+                    className="text-xs font-medium text-gold-dark hover:underline"
+                  >
+                    ★ Rate this item
+                  </Link>
+                )}
+              </li>
             ))}
           </ul>
           <p className="mt-2 text-sm font-bold text-maroon">{formatINR(o.total)}</p>
