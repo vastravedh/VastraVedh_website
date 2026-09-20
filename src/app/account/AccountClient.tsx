@@ -30,22 +30,53 @@ function LoginCard() {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [resendIn, setResendIn] = useState(0); // seconds until resend allowed
+  const [resent, setResent] = useState(false);
+
+  // Count down the resend cooldown.
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const t = setTimeout(() => setResendIn((s) => s - 1), 1000);
+    return () => clearTimeout(t);
+  }, [resendIn]);
+
+  const requestCode = async (): Promise<boolean> => {
+    setError("");
+    const res = await fetch("/api/auth/request-otp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) return true;
+    setError(data.error || "Could not send the code.");
+    return false;
+  };
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    setError("");
     try {
-      const res = await fetch("/api/auth/request-otp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (res.ok) {
+      if (await requestCode()) {
         setStep("code");
-      } else {
-        setError(data.error || "Could not send the code.");
+        setResendIn(30);
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const resendCode = async () => {
+    if (resendIn > 0 || busy) return;
+    setBusy(true);
+    setResent(false);
+    try {
+      if (await requestCode()) {
+        setResendIn(30);
+        setResent(true);
+        setTimeout(() => setResent(false), 3000);
       }
     } catch {
       setError("Network error. Please try again.");
@@ -145,15 +176,34 @@ function LoginCard() {
               />
             </div>
             {error && <p className="text-sm font-medium text-red-600">{error}</p>}
+            {resent && (
+              <p className="text-sm font-medium text-green-600">
+                ✓ A new code has been sent.
+              </p>
+            )}
             <button type="submit" disabled={busy} className="btn-primary w-full disabled:opacity-50">
               {busy ? "Verifying…" : "Verify & Sign In"}
             </button>
+
+            <div className="flex items-center justify-center gap-1 text-sm">
+              <span className="text-ink/50">Didn&apos;t get it?</span>
+              <button
+                type="button"
+                onClick={resendCode}
+                disabled={resendIn > 0 || busy}
+                className="font-medium text-maroon hover:underline disabled:text-ink/40 disabled:no-underline"
+              >
+                {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
+              </button>
+            </div>
+
             <button
               type="button"
               onClick={() => {
                 setStep("email");
                 setCode("");
                 setError("");
+                setResendIn(0);
               }}
               className="w-full text-center text-sm text-maroon hover:underline"
             >
