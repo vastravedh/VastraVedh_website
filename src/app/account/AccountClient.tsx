@@ -30,13 +30,11 @@ function LoginCard() {
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [devCode, setDevCode] = useState("");
 
   const sendCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setError("");
-    setDevCode("");
     try {
       const res = await fetch("/api/auth/request-otp", {
         method: "POST",
@@ -46,7 +44,6 @@ function LoginCard() {
       const data = await res.json();
       if (res.ok) {
         setStep("code");
-        if (data.devCode) setDevCode(data.devCode);
       } else {
         setError(data.error || "Could not send the code.");
       }
@@ -130,14 +127,9 @@ function LoginCard() {
         ) : (
           <form onSubmit={verify} className="mt-6 space-y-4">
             <p className="text-sm text-ink/70">
-              Enter the 6-digit code sent to <strong>{email}</strong>.
+              Enter the 6-digit code sent to <strong>{email}</strong>. Check
+              your inbox and spam folder.
             </p>
-            {devCode && (
-              <p className="rounded-md bg-cream-dark px-3 py-2 text-xs text-ink/70">
-                Email isn&apos;t configured yet, so here&apos;s your code for
-                testing: <strong className="text-maroon">{devCode}</strong>
-              </p>
-            )}
             <div>
               <label className="mb-1 block text-sm font-medium text-ink">
                 One-time code

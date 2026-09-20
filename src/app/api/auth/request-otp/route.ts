@@ -16,9 +16,8 @@ export async function POST(req: Request) {
     );
   }
   try {
-    const { devCode } = await requestOtp(email);
-    // devCode is only present when email isn't configured / in dev.
-    return NextResponse.json({ ok: true, devCode });
+    await requestOtp(email);
+    return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json(
       { ok: false, error: "Could not send the code. Please try again." },

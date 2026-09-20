@@ -60,14 +60,16 @@ export async function requestOtp(
     html,
   });
 
-  // Only surface the code on screen when we could NOT email it (no provider
-  // configured, or the send failed). Once email works, the code is never shown.
+  // Never expose the code to the browser — that would let anyone sign in as
+  // anyone. If email couldn't be sent, log it server-side only (admin logs)
+  // so the account owner can still assist during setup.
   const emailed = res.ok && !res.skipped;
   if (!emailed) {
-    console.warn("[userAuth] OTP not emailed; falling back to on-screen code.", res.error ?? "");
+    console.warn(
+      `[userAuth] OTP for ${id} could not be emailed (${res.error ?? "no provider"}). Code: ${code}`
+    );
   }
-  const devCode = emailed ? undefined : code;
-  return { ok: true, devCode };
+  return { ok: true };
 }
 
 /** Verify a code. On success sets the session cookie and returns the email. */
