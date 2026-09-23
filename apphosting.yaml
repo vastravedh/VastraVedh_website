@@ -70,8 +70,14 @@ env:
   - variable: RESEND_API_KEY
     secret: RESEND_API_KEY
 
-  # Email sender. Using Resend's shared sender until the domain is verified.
+  # Email sender via Gmail SMTP (reliable delivery for low volume).
   - variable: MAIL_FROM
-    value: VastraVedh <onboarding@resend.dev>
+    value: VastraVedh <vastravedh3105@gmail.com>
     availability:
       - RUNTIME
+  - variable: GMAIL_USER
+    value: vastravedh3105@gmail.com
+    availability:
+      - RUNTIME
+  - variable: GMAIL_APP_PASSWORD
+    secret: GMAIL_APP_PASSWORD
